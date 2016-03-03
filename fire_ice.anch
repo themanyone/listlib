@@ -1,0 +1,41 @@
+//usr/local/bin/anch -I. -run "$0" -std=c99 "$@"; exit
+/* listlib test fire and ice
+ *
+ * Copyright (C) 2010, 2013 by Henry Kroll III, www.thenerdshow.com
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+#include "listlib.h"
+char *s[] = {
+"---------- Ice and Fire ------------",
+"                                    ",
+"fire, in end will world the say Some",
+"ice. in say Some                    ",
+"desire of tasted I've what From     ",
+"fire. favor who those with hold I   ",
+"                                    ",
+"... elided paragraph last ...       ",
+"                                    ",
+"Frost Robert -----------------------",
+NULL } 
+int main  void
+    LinkedList wordList, revList;
+    ForEach  s, line
+        wordList = list  NULL, SPLIT, ALT(malloc, line), " "
+        revList  = list  wordList, REVERSE
+        list  revList, PRINT, 0
+        list  revList, DESTROY
+        list  wordList,DESTROY
+        FREE  line
+    return EXIT_SUCCESS

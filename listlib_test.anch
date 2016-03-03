@@ -1,0 +1,47 @@
+//usr/local/bin/anch -I. -keep -run "$0" -std=c99 "$@"; exit
+/* listlib test
+ *
+ * Copyright (C) 2010, 2013 by Henry Kroll III, www.thenerdshow.com
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+#include "listlib.h"
+int main  void
+    LinkedList myList, revList
+    char *tmp, s[] = "I like my cheese"
+    char fromArray[][10] = {
+                            "dog",
+                            "cat",
+                            "mouse",
+                            "goat",
+                            "" }; 
+    puts  list(NULL,HELP)
+    printf  "Split: %s\n",s
+    myList = list  NULL,SPLIT,s," "
+    printf  "Move '%s' to the beginning:\n",
+        tmp = (char*)list (myList, POP, 2)
+    myList = list  myList, PREPEND, tmp
+    FREE  tmp  /* POP must be FREE'd */
+    list  myList, PRINT, 1
+    list  myList, DESTROY
+    printf  "\nReverse Sort %s array:\n",fromArray[0]
+    myList = list  NULL,CREATE,fromArray,10
+    myList = list  myList,SORT, strcmp, -1
+    list  myList, PRINT, 1
+    printf  "\nReverse:\n"
+    revList = list  myList,REVERSE
+    list  revList, PRINT, 1
+    list  myList, DESTROY
+    list  revList,DESTROY
+    return EXIT_SUCCESS

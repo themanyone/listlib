@@ -1,0 +1,279 @@
+/* LinkedList
+ *
+ * Copyright (C) 2010, 2013 by Henry Kroll III, www.thenerdshow.com
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+#include "listlib.h"
+//{
+void *list  LinkedList head, int command, ...
+    char *help =
+"void *list (LinkedList head, int command, ...)\n" 
+"ad-hoc polymorphic list function\n" 
+"may return a string, an int, or head pointer\n" 
+"depending on the command sent to it.\n" 
+"\n" 
+"commmands CREATE,COPY,APPEND,PREPEND,INSERT,REVERSE\n" 
+"return new head pointers.\n" 
+"\n" 
+"COPY or REVERSE creates a duplicate list.\n\n"
+    LinkedList curr, tmp, prev, next
+    static long iret
+    long ind,len
+    int i,j
+    psfunc func
+    va_list ap
+    char *arg=NULL, *spl, *s
+    va_start  ap, command
+    curr = tmp = prev = next = NULL
+
+    switch  command
+        case HELP:
+            return help
+        
+        case CREATE:
+            arg = va_arg  ap, char*
+            len = va_arg  ap, int
+            for  i = 0; *(arg+len*i);
+                head = list  head,APPEND,arg+len*i++
+
+            return head
+        
+        case SPLIT:
+            arg = va_arg  ap, char*
+            spl = va_arg  ap, char*
+            for  s=strtok(arg,spl);s;s=strtok(NULL,spl)
+                head = list  head,APPEND,s
+
+            return head
+        
+        case APPEND:
+            arg = va_arg  ap, char *
+            /* make a new LinkedList and store data in it */
+            TRY  curr = malloc(sizeof *curr)
+            TRY  s = malloc(strlen(arg)+1)
+            strcpy  s,arg
+            curr->data = s
+            
+            /* this is always the last node */
+            curr->next = NULL
+            
+            /* if head is null we need to create it */
+            if  !head
+                head = curr
+            else
+                /* find original (prev) last node */
+                prev = head
+                while  prev->next
+                    prev = prev->next
+                
+                /* and point it at current (curr) */
+                prev->next = curr
+            
+            return  head
+
+        case PREPEND:
+            arg = va_arg  ap, char *
+            /* make a new LinkedList and store data in it */
+            TRY  curr = malloc(sizeof *curr)
+            TRY  s = malloc(strlen(arg)+1)
+            /* dup filename string */
+            strcpy  s,arg
+            curr->data = s
+            /* point it at old head */
+            curr->next = head
+            /* return new head */
+            head = curr
+            return head
+        
+        case INSERT:
+            ind = va_arg (ap, int)
+            arg = va_arg (ap, char *)
+            tmp = list(head,_GET_PTR,ind)
+            /* if we can't insert just PREPEND */
+            if  !tmp
+                return list  head,PREPEND,arg
+
+            else
+                /* make new element */
+                TRY  curr = malloc(sizeof *curr)
+                TRY  s = malloc(strlen(arg)+1)
+                strcpy  s, arg
+                curr->data = s
+                
+                /* insert it */
+                curr->next = tmp->next
+                tmp->next = curr
+                return head
+
+        
+        case LEN:
+            curr = head
+            iret = 0
+            while  curr
+                curr = curr->next; iret++
+            
+            return &iret
+        
+        case PRINT:
+            /* print indices? */
+            ind = va_arg  ap, int
+            i = 0
+            while  head
+                if  ind
+                    printf  "%i. ",i++
+                    printf  "%s\n",head->data
+                else
+                    printf  "%s ",head->data
+                head = head->next
+            
+            puts  ""
+            break
+        
+        case REMOVE:
+            arg = va_arg  ap, char *
+            ind = *(long*)list  head,INDEX,arg
+            return list  head,POP,ind
+        
+        case COPY:
+            tmp = va_arg  ap, LinkedList
+            curr = list  head,APPEND,tmp->data
+            while  (tmp = tmp->next)
+                curr = list  curr,APPEND,tmp->data
+            
+            return curr
+        
+        case REVERSE:
+            tmp = head, head= NULL
+            while  tmp
+                head = list  head,PREPEND,tmp->data
+                tmp = tmp->next
+            
+            return head
+        
+        case SORT:
+            /* Bubble sort. Passing -1 reverses direction. */
+            len = *(long*)list  head,LEN
+            int (*fun)(const char *, const char *) = va_arg  ap, void *
+            ind = va_arg  ap, int
+            for  i=0;i<len-1;i++
+                curr = prev = head
+                next = head->next
+                for  j=0;j<len-i-1;j++
+                    if  fun(curr->data, next->data) * ind > 0
+                        curr->next = next->next
+                        next->next = curr
+                        if  curr == head
+                            head = prev = next
+                        
+                        else
+                            prev=prev->next=next
+                        
+                        if  next
+                            next = curr->next
+                        
+                    else
+                        /* advance pointers */
+                        prev = curr
+                        curr = next
+                        next = curr->next
+                
+            return head
+            
+        case DESTROY:
+            while  head
+                next = head->next
+                FREE  head->data
+                FREE  head
+                head = next
+                    
+            break
+        
+        case POP:
+            ind = va_arg  ap, int
+            prev = list(head,_GET_PTR,ind)
+            if  prev && (curr = prev->next)
+                /* return the string */
+                arg = curr->data
+                /* pop it out of the list */
+                prev->next = curr->next
+                FREE  curr
+
+            else if  head && ind == 0
+                /* return string from head */
+                arg = head->data
+                /* get orphan in prev */
+                prev = head->next
+                /* free  head->data */
+                if(head->next) *head = *head->next;
+                /* free orphan */
+                FREE  prev
+            
+            return arg
+    
+        case GET:
+            ind = va_arg  ap, int
+            len = *(long*)list(head,LEN)
+            tmp = list(head,_GET_PTR,len - ind)
+            /* printf  " len:%i ind:%i\n",len,ind */
+            return tmp?tmp->data:NULL
+        
+        case INDEX:
+            arg = va_arg  ap, char *
+            curr = head
+            tmp = NULL
+            iret = 0
+            while  curr
+                if  !strcmp(curr->data,arg)
+                    break
+        
+                curr = curr->next; iret++
+                
+            if  !curr
+                iret = -1
+            
+            return &iret
+        
+        case _FIND_PTR:
+            arg = va_arg  ap, char *
+            func = va_arg  ap, psfunc  /* see .h */
+            if  !func  func=strcmp
+            curr = head
+            while  curr
+                debug  "listlib: !strcmp(\"%s\",\"%s\")\n",curr->data,arg
+                if  !func(curr->data,arg)  return curr
+                curr = curr->next
+
+            return NULL
+
+        
+        case _GET_PTR:
+            ind = va_arg  ap, int
+            curr = head
+            for  i=ind;i--;
+                tmp = curr
+                if  !(curr = curr->next)
+                    break
+
+            return tmp
+
+        default:
+        ERR  "Not found: %i\n",command
+
+    return NULL
+//}
+/* #ifdef __TINYC__
+ * #include "listlib_test.c"
+ * #endif
+ */
