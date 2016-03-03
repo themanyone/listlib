@@ -50,7 +50,7 @@ s:
 	scite Makefile *.h *.anch&
 
 doc:
-	tml README.md > README.html
+	tml README.tml > README.html
 
 shared: LDFLAGS+=-Llibs -llistlib
 shared: $(NAME).so $(BUILD_TARGETS:.o=)
