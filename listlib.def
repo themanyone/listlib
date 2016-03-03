@@ -1,0 +1,4 @@
+LIBRARY listlib.dll
+
+EXPORTS
+list

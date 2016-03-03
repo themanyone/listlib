@@ -1,4 +1,5 @@
 #!/bin/bash
+make clean
 make shared
 export LD_LIBRARY_PATH=libs
-./fire_ice
+bin/fire_ice

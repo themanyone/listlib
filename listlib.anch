@@ -17,7 +17,7 @@
  */
 #include "listlib.h"
 //{
-void *list  LinkedList head, int command, ...
+DLL_EXPORT void *list  LinkedList head, int command, ...
     char *help =
 "void *list (LinkedList head, int command, ...)\n" 
 "ad-hoc polymorphic list function\n" 
@@ -165,7 +165,7 @@ void *list  LinkedList head, int command, ...
         case SORT:
             /* Bubble sort. Passing -1 reverses direction. */
             len = *(long*)list  head,LEN
-            int (*fun)(const char *, const char *) = va_arg  ap, void *
+            int (*fun)(const void *, const void *) = va_arg  ap, void *
             ind = va_arg  ap, int
             for  i=0;i<len-1;i++
                 curr = prev = head

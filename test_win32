@@ -1,0 +1,4 @@
+#!/bin/bash
+make clean
+CC=i386-win-tcc make
+wine bin/fire_ice.exe

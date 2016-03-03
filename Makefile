@@ -1,11 +1,24 @@
 NAME=listlib
 BUILD_TARGETS=$(NAME)_test.o fire_ice.o
-#~ BUILD_LIBS=mylib1.o mylib2.o
 BUILD_LIBS=$(NAME).o
-INCLUDES=-I.
-LDFLAGS=
-CFLAGS=-g -Wall -pipe -O2 -std=c99
-MING=/usr/bin/i686-pc-mingw32-gcc
+INCLUDES+=-I.
+LDFLAGS+=-Llibs
+LIBEXT=.so
+CFLAGS+=-g -Wall -pipe -O2 -std=c99
+# detect if cross-compiling to windows
+ifneq (,$(findstring win,$(CC)))
+	LIBEXT=.dll
+	LDFLAGS=
+	EXT=.exe
+	# if make shared, use dll.def files for exports
+	ifneq (,$(findstring shared,$(MAKECMDGOALS)))
+		DEFS=$(NAME).def
+	endif
+endif
+
+PREFIX=/usr/local
+LIBDIR=$(PREFIX)/lib64
+BINDIR=$(PREFIX)/bin
 
 #~ make foo.c
 %.c : %.anch
@@ -17,7 +30,7 @@ MING=/usr/bin/i686-pc-mingw32-gcc
 
 #~ generic "make foo"
 % : %.o $(BUILD_LIBS)
-	$(CC) $(BUILD_LIBS) "$<" -o "$*$(EXT)" $(LDFLAGS)
+	$(CC) $(BUILD_LIBS) $(DEFS) "$<" -o "bin/$*$(EXT)" $(LDFLAGS)
 
 #~ "make foo.so" shared library
 %.so : CFLAGS+=-fPIC
@@ -27,24 +40,15 @@ MING=/usr/bin/i686-pc-mingw32-gcc
 	ln -sf "lib$@.1.0.1" "libs/lib$@.1"
 	ln -sf "lib$@.1.0.1" "libs/lib$@"
 
+%.dll : LDFLAGS+=-shared
+%.dll : %.o
+	$(CC) $(CFLAGS) $(LDFLAGS) $< -o "$@"
+
 #~ defauilt rule builds target[s] [libs]
 all: $(BUILD_TARGETS:.o=)
 
-#~ other targets
-win: CC=$(MING)
-win: EXT=.exe
-win: all
-
-#~ build some other target including an extra shared lib
-other: CFLAGS+=-g -pedantic -O0
-other: $(BUILD_LIBS:.o=.so) rec.so
-	$(MAKE) train CFLAGS="-g -O0" BUILD_LIBS= LDFLAGS="-lpulse -lpulse-simple -Llibs $(addprefix -l,$(BUILD_LIBS:.o=) rec)"
-
 debug: CFLAGS+=-g -pedantic -O0
 debug: all
-
-%.asm : %.o
-	objdump -Sx $< > $@
 
 s:
 	scite Makefile *.h *.anch&
@@ -52,15 +56,22 @@ s:
 html:
 	tml README.tml > README.html
 
-shared: LDFLAGS+=-Llibs -llistlib
-shared: $(NAME).so $(BUILD_TARGETS:.o=)
-
+shared: BUILD_LIBS :=
+ifeq (,$(findstring win,$(CC)))
+shared: LDFLAGS+=-llistlib
+endif
+shared: $(NAME)$(LIBEXT) all
+	
 clean:
-	rm -f $(BUILD_TARGETS) $(BUILD_TARGETS:.o=)  $(BUILD_TARGETS:.o=.c) $(BUILD_TARGETS:.o=.exe) $(BUILD_LIBS) *.asm
+	rm -f $(BUILD_TARGETS) $(BUILD_TARGETS:.o=) $(BUILD_TARGETS:.o=.c) \
+	$(BUILD_LIBS) $(BUILD_LIBS:.o=.dll) $(BUILD_LIBS:.o=.c)
 	rm -f libs/*
+	rm -f bin/*
 
 pub:
 	-strip $(BUILD_TARGETS:.o=)
 	-i686-pc-mingw32-strip $(BUILD_TARGETS:.o=.exe)
-    
+
+print-%: ; @echo $*=$($*)
+
 .SECONDARY:

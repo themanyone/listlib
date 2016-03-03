@@ -19,11 +19,13 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
-#include <strings.h>
 #include <stdlib.h>
 #include <errno.h>
-#ifdef __MINGW_H
-#define strcasecmp stricmp
+#define DLL_EXPORT
+#if defined(_WIN32) || defined(_WIN64)
+#include <windows.h>
+#undef DLL_EXPORT
+#define DLL_EXPORT __declspec(dllexport)
 #endif
 #define _STR(a) #a
 #define STR(a) _STR(a)
