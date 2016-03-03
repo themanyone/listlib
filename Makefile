@@ -49,7 +49,7 @@ debug: all
 s:
 	scite Makefile *.h *.anch&
 
-doc:
+html:
 	tml README.tml > README.html
 
 shared: LDFLAGS+=-Llibs -llistlib
