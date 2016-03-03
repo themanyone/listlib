@@ -28,7 +28,7 @@ int main  void
                             "" }; 
     puts  list(NULL,HELP)
     printf  "Split: %s\n",s
-    myList = list  NULL,SPLIT,s," "
+    myList = list  NULL, SPLIT, s, " "
     printf  "Move '%s' to the beginning:\n",
         tmp = (char*)list (myList, POP, 2)
     myList = list  myList, PREPEND, tmp
@@ -36,11 +36,11 @@ int main  void
     list  myList, PRINT, 1
     list  myList, DESTROY
     printf  "\nReverse Sort %s array:\n",fromArray[0]
-    myList = list  NULL,CREATE,fromArray,10
-    myList = list  myList,SORT, strcmp, -1
+    myList = list  NULL, CREATE, fromArray, 10
+    myList = list  myList, SORT, -1, NULL
     list  myList, PRINT, 1
     printf  "\nReverse:\n"
-    revList = list  myList,REVERSE
+    revList = list  myList, REVERSE
     list  revList, PRINT, 1
     list  myList, DESTROY
     list  revList,DESTROY

@@ -37,7 +37,6 @@ DLL_EXPORT void *list  LinkedList head, int command, ...
     char *arg=NULL, *spl, *s
     va_start  ap, command
     curr = tmp = prev = next = NULL
-
     switch  command
         case HELP:
             return help
@@ -45,8 +44,8 @@ DLL_EXPORT void *list  LinkedList head, int command, ...
         case CREATE:
             arg = va_arg  ap, char*
             len = va_arg  ap, int
-            for  i = 0; *(arg+len*i);
-                head = list  head,APPEND,arg+len*i++
+            for  i = 0; *(arg + len * i);
+                head = list  head, APPEND, arg + len * i++
 
             return head
         
@@ -117,7 +116,6 @@ DLL_EXPORT void *list  LinkedList head, int command, ...
                 tmp->next = curr
                 return head
 
-        
         case LEN:
             curr = head
             iret = 0
@@ -127,16 +125,17 @@ DLL_EXPORT void *list  LinkedList head, int command, ...
             return &iret
         
         case PRINT:
+            curr = head
             /* print indices? */
             ind = va_arg  ap, int
             i = 0
-            while  head
+            while  curr
                 if  ind
                     printf  "%i. ",i++
-                    printf  "%s\n",head->data
+                    printf  "%s\n",curr->data
                 else
-                    printf  "%s ",head->data
-                head = head->next
+                    printf  "%s ",curr->data
+                curr = curr->next
             
             puts  ""
             break
@@ -160,18 +159,19 @@ DLL_EXPORT void *list  LinkedList head, int command, ...
                 head = list  head,PREPEND,tmp->data
                 tmp = tmp->next
             
-            return head
+            break
         
         case SORT:
             /* Bubble sort. Passing -1 reverses direction. */
             len = *(long*)list  head,LEN
-            int (*fun)(const void *, const void *) = va_arg  ap, void *
             ind = va_arg  ap, int
+            func = va_arg  ap, psfunc
+            if  !func  func=strcmp
             for  i=0;i<len-1;i++
                 curr = prev = head
                 next = head->next
                 for  j=0;j<len-i-1;j++
-                    if  fun(curr->data, next->data) * ind > 0
+                    if  func(curr->data, next->data) * ind > 0
                         curr->next = next->next
                         next->next = curr
                         if  curr == head
@@ -231,11 +231,13 @@ DLL_EXPORT void *list  LinkedList head, int command, ...
         
         case INDEX:
             arg = va_arg  ap, char *
+            func = va_arg  ap, void *  /* see .h */
+            if  !func  func=strcmp
             curr = head
             tmp = NULL
             iret = 0
             while  curr
-                if  !strcmp(curr->data,arg)
+                if  !func(curr->data,arg)
                     break
         
                 curr = curr->next; iret++
@@ -271,7 +273,7 @@ DLL_EXPORT void *list  LinkedList head, int command, ...
         default:
         ERR  "Not found: %i\n",command
 
-    return NULL
+    return head
 //}
 /* #ifdef __TINYC__
  * #include "listlib_test.c"

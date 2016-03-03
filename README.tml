@@ -5,7 +5,7 @@ description: Linked list library for C
 
 ListLib is a small library for working with linked-lists.
 
-ListLib is part of [//anch.org/tml.html TML project], the application we made to generate web pages from text wiki markup. [programs/listlib.zip Listlib] creates a stack to store nested tag values and file names for backlinks. [programs/listlib.zip Listlib] handles multiple lists. ListLib has methods to split strings into lists and sort them, but it also works on other types of data or structures.
+ListLib is part of [//anch.org/tml.html TML project], the application we made to generate web pages from text wiki markup. [programs/listlib.zip Listlib] creates a stack to store nested tag values and file names for backlinks. [programs/listlib.zip Listlib] handles multiple lists. ListLib has methods to split strings into lists and do things with them.
 
 The ListLib library is one monolithic, polymorphic function cleverly named, "list". The main thing to remember is that POP pulls an allocated structure out of the list, with the consequence that we have to explicitly FREE it (see example below). To use [programs/listlib.zip Listlib], put `#include "listlib.h"` at the top of the file. Use the enum values, PRINT, DESTROY, etc. to access the various methods. For help, `puts (list(NULL,HELP));`
 

@@ -30,12 +30,9 @@ char *s[] = {
 "Frost Robert -----------------------",
 NULL } 
 int main  void
-    LinkedList wordList, revList;
+    LinkedList wordList;
     ForEach  s, line
         wordList = list  NULL, SPLIT, ALT(malloc, line), " "
-        revList  = list  wordList, REVERSE
-        list  revList, PRINT, 0
-        list  revList, DESTROY
-        list  wordList,DESTROY
-        FREE  line
+        list  list (list (wordList, REVERSE), PRINT, 0), DESTROY
+        list  wordList,DESTROY  ; FREE  line
     return EXIT_SUCCESS
