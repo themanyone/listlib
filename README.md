@@ -34,6 +34,8 @@ Move 'my' to the beginning:
 ## Building Listlib
 
 Compiling listlib is simple once dependencies have been installed.
-    * [TML](//anch.org/tml.html) is needed to build the HTML documentation.
-    * [Anchor](//github.com/themanyone/anch) is required to build the C sources.
+
+* [TML](//anch.org/tml.html) is needed to build the HTML documentation.
+* [Anchor](//github.com/themanyone/anch) is required to build the C sources.
+
 After that, just run `make`.
